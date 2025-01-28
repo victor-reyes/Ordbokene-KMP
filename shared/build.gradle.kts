@@ -31,4 +31,5 @@ android {
     targetCompatibility = JavaVersion.VERSION_11
   }
   defaultConfig { minSdk = libs.versions.android.minSdk.get().toInt() }
+  sourceSets["test"].resources { srcDirs("src/commonTest/resources") }
 }
