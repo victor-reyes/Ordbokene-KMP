@@ -33,3 +33,10 @@ android {
   defaultConfig { minSdk = libs.versions.android.minSdk.get().toInt() }
   sourceSets["test"].resources { srcDirs("src/commonTest/resources") }
 }
+
+tasks.register<Copy>("copyiOSTestResources") {
+  from("src/commonTest/resources")
+  into("build/bin/iosSimulatorArm64/debugTest/resources")
+}
+
+tasks.findByName("iosSimulatorArm64Test")!!.dependsOn("copyiOSTestResources")
