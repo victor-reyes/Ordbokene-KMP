@@ -20,3 +20,5 @@ class ArticleResponseTest {
     println(parsed)
   }
 }
+
+expect fun readResources(resourceName: String): String
