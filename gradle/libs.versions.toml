@@ -15,8 +15,10 @@ compose-multiplatform = "1.7.0"
 junit = "4.13.2"
 kotlin = "2.1.0"
 kotlinxSerialization = "1.8.0"
+lifecycleViewmodelComposeAndroid = "2.8.7"
 
 [libraries]
+androidx-lifecycle-viewmodel-compose-android = { module = "androidx.lifecycle:lifecycle-viewmodel-compose-android", version.ref = "lifecycleViewmodelComposeAndroid" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
