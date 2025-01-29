@@ -26,8 +26,10 @@ class ArticleResponseTest {
 
   @Test
   fun shouldPassAllArticles() {
-    val rawJson = readResources("articles_bm.json")
-    format.decodeFromString<Map<String, ArticleResponse>>(rawJson)
+    listOf("bm", "nn").forEach {
+      val rawJson = readResources("articles_$it.json")
+      format.decodeFromString<Map<String, ArticleResponse>>(rawJson)
+    }
   }
 }
 
