@@ -40,3 +40,5 @@ tasks.register<Copy>("copyiOSTestResources") {
 }
 
 tasks.findByName("iosSimulatorArm64Test")!!.dependsOn("copyiOSTestResources")
+
+tasks.withType<Test>().configureEach { jvmArgs("-Xmx1G") }
