@@ -7,6 +7,7 @@ import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
+import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import kotlinx.serialization.json.JsonObject
 
 @JsonClassDiscriminator("type_") @Polymorphic @Serializable sealed interface DefinitionElement
@@ -29,14 +30,10 @@ data class ExplanationElement(
   val usage: List<JsonObject> = emptyList(),
 ) : DefinitionElement
 
+@JsonIgnoreUnknownKeys
 @Serializable
 @SerialName("example")
-data class ExampleElement(
-  val quote: Quote,
-  val explanation: Explanation? = null,
-  val attest: List<Nothing> = emptyList(),
-  val tydingstekst: Tydingstekst? = null,
-) : DefinitionElement
+data class ExampleElement(val quote: Quote, val explanation: Explanation? = null) : DefinitionElement
 
 @Serializable
 @SerialName("sub_article")
@@ -48,6 +45,7 @@ data class SubArticleElement(
   val status: String? = null,
 ) : DefinitionElement
 
+@JsonIgnoreUnknownKeys
 @Serializable
 @SerialName("compound_list")
-data class CompoundListElement(val intro: Intro, val elements: List<ArticleRef>) : DefinitionElement
+data class CompoundListElement(val intro: Intro, val elements: List<ArticleRef> = emptyList()) : DefinitionElement
