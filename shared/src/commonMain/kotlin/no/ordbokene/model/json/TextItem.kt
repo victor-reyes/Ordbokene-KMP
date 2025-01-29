@@ -9,80 +9,44 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 
-@JsonClassDiscriminator("type_")
-@Polymorphic
-@Serializable
-sealed interface TextItem
+@JsonClassDiscriminator("type_") @Polymorphic @Serializable sealed interface TextItem
 
-@JsonIgnoreUnknownKeys
-@Serializable
-@SerialName("usage")
-data class Usage(val text: String) : TextItem
+@JsonIgnoreUnknownKeys @Serializable @SerialName("usage") data class Usage(val text: String) : TextItem
 
-@JsonIgnoreUnknownKeys
-@Serializable
-@SerialName("superscript")
-data class Superscript(val text: String) : TextItem
+@JsonIgnoreUnknownKeys @Serializable @SerialName("superscript") data class Superscript(val text: String) : TextItem
 
-@JsonIgnoreUnknownKeys
-@Serializable
-@SerialName("subscript")
-data class Subscript(val text: String) : TextItem
+@JsonIgnoreUnknownKeys @Serializable @SerialName("subscript") data class Subscript(val text: String) : TextItem
 
 @Polymorphic
 @Serializable
 sealed interface UniqueItem : TextItem {
-    val id: String
+  val id: String
 }
 
-@Serializable
-@SerialName("grammar")
-data class GrammarItem(override val id: String) : UniqueItem
+@Serializable @SerialName("grammar") data class GrammarItem(override val id: String) : UniqueItem
 
-@Serializable
-@SerialName("domain")
-data class DomainItem(override val id: String) : UniqueItem
+@Serializable @SerialName("domain") data class DomainItem(override val id: String) : UniqueItem
 
-@Serializable
-@SerialName("rhetoric")
-data class RhetoricItem(override val id: String) : UniqueItem
+@Serializable @SerialName("rhetoric") data class RhetoricItem(override val id: String) : UniqueItem
 
-@Serializable
-@SerialName("entity")
-data class EntityItem(override val id: String) : UniqueItem
+@Serializable @SerialName("entity") data class EntityItem(override val id: String) : UniqueItem
 
-@Serializable
-@SerialName("relation")
-data class RelationItem(override val id: String) : UniqueItem
+@Serializable @SerialName("relation") data class RelationItem(override val id: String) : UniqueItem
 
-@Serializable
-@SerialName("language")
-data class LanguageItem(override val id: String) : UniqueItem
+@Serializable @SerialName("language") data class LanguageItem(override val id: String) : UniqueItem
 
-@Serializable
-@SerialName("temporal")
-data class TemporalItem(override val id: String) : UniqueItem
+@Serializable @SerialName("temporal") data class TemporalItem(override val id: String) : UniqueItem
 
 @Serializable
 @SerialName("quote_inset")
-data class QuoteInset(
-    override val content: String,
-    override val items: List<TextItem> = emptyList()
-) :
-    TextItem, ContentNode
+data class QuoteInset(override val content: String, override val items: List<TextItem> = emptyList()) :
+  TextItem, ContentNode
 
 @Serializable
 @SerialName("pronunciation_guide")
-data class PronunciationGuide(
-    override val content: String,
-    override val items: List<TextItem> = emptyList()
-) :
-    TextItem, ContentNode
+data class PronunciationGuide(override val content: String, override val items: List<TextItem> = emptyList()) :
+  TextItem, ContentNode
 
 @Serializable
 @SerialName("fraction")
-data class FractionItem(
-    val items: List<Nothing> = emptyList(),
-    val numerator: Int,
-    val denominator: Int
-) : TextItem
+data class FractionItem(val items: List<Nothing> = emptyList(), val numerator: Int, val denominator: Int) : TextItem

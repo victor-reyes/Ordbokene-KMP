@@ -9,46 +9,43 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlinx.serialization.json.JsonObject
 
-@JsonClassDiscriminator("type_")
-@Polymorphic
-@Serializable
-sealed interface DefinitionElement
+@JsonClassDiscriminator("type_") @Polymorphic @Serializable sealed interface DefinitionElement
 
 @Serializable
 @SerialName("definition")
 data class SubDefinitionElement(
-    val id: Int,
-    val elements: List<DefinitionElement>,
-    @SerialName("sub_definition") val subDefinition: Boolean? = null,
-    val status: String? = null,
+  val id: Int,
+  val elements: List<DefinitionElement>,
+  @SerialName("sub_definition") val subDefinition: Boolean? = null,
+  val status: String? = null,
 ) : DefinitionElement
 
 @Serializable
 @SerialName("explanation")
 data class ExplanationElement(
-    val content: String,
-    val items: List<TextItem> = emptyList(),
-    val attest: List<Nothing> = emptyList(),
-    val usage: List<JsonObject> = emptyList(),
+  val content: String,
+  val items: List<TextItem> = emptyList(),
+  val attest: List<Nothing> = emptyList(),
+  val usage: List<JsonObject> = emptyList(),
 ) : DefinitionElement
 
 @Serializable
 @SerialName("example")
 data class ExampleElement(
-    val quote: Quote,
-    val explanation: Explanation? = null,
-    val attest: List<Nothing> = emptyList(),
-    val tydingstekst: Tydingstekst? = null,
+  val quote: Quote,
+  val explanation: Explanation? = null,
+  val attest: List<Nothing> = emptyList(),
+  val tydingstekst: Tydingstekst? = null,
 ) : DefinitionElement
 
 @Serializable
 @SerialName("sub_article")
 data class SubArticleElement(
-    @SerialName("article_id") val articleId: Int,
-    val lemmas: List<String> = emptyList(),
-    val intro: Intro,
-    val article: SubArticle,
-    val status: String? = null,
+  @SerialName("article_id") val articleId: Int,
+  val lemmas: List<String> = emptyList(),
+  val intro: Intro,
+  val article: SubArticle,
+  val status: String? = null,
 ) : DefinitionElement
 
 @Serializable

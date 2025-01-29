@@ -1,3 +1,1 @@
-actual fun readResources(resourceName: String) =
-    ClassLoader.getSystemResource(resourceName).readText()
-
+actual fun readResources(resourceName: String) = ClassLoader.getSystemResource(resourceName).readText()
