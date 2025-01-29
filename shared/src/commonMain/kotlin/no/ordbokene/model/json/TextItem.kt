@@ -3,11 +3,19 @@
 package no.ordbokene.model.json
 
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonClassDiscriminator
+import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
+import kotlinx.serialization.json.JsonPrimitive
 
 @JsonClassDiscriminator("type_") @Polymorphic @Serializable sealed interface TextItem
 
@@ -49,4 +57,24 @@ data class PronunciationGuide(override val content: String, override val items: 
 
 @Serializable
 @SerialName("fraction")
-data class FractionItem(val items: List<Nothing> = emptyList(), val numerator: Int, val denominator: Int) : TextItem
+data class FractionItem(
+  val items: List<Nothing> = emptyList(),
+  @Serializable(with = PrimitiveAsStringSerializer::class) val numerator: String,
+  @Serializable(with = PrimitiveAsStringSerializer::class) val denominator: String,
+) : TextItem
+
+object PrimitiveAsStringSerializer : KSerializer<String> {
+  override val descriptor: SerialDescriptor =
+    PrimitiveSerialDescriptor("PrimitiveAsStringSerializer", PrimitiveKind.STRING)
+
+  override fun deserialize(decoder: Decoder): String {
+    val jsonDecoder = (decoder as JsonDecoder)
+    val element = jsonDecoder.decodeJsonElement()
+    return when (element) {
+      is JsonPrimitive -> element.content
+      else -> throw RuntimeException()
+    }
+  }
+
+  override fun serialize(encoder: Encoder, value: String) = encoder.encodeString(value)
+}
