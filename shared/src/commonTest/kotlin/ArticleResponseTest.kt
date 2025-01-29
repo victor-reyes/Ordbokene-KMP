@@ -23,6 +23,12 @@ class ArticleResponseTest {
     assertEquals("score", parsed.lemmas.last().lemma)
     assertEquals(3, parsed.body.definitions.first().id)
   }
+
+  @Test
+  fun shouldPassAllArticles() {
+    val rawJson = readResources("articles_bm.json")
+    format.decodeFromString<Map<String, ArticleResponse>>(rawJson)
+  }
 }
 
 expect fun readResources(resourceName: String): String
