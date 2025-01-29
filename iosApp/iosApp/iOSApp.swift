@@ -2,9 +2,10 @@ import SwiftUI
 
 @main
 struct iOSApp: App {
+    @StateObject private var searchViewModel = SearchViewModel()
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView().environmentObject(searchViewModel)
         }
     }
 }
