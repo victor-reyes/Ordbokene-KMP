@@ -1,6 +1,7 @@
 import kotlinx.serialization.json.Json
-import no.ordbokene.model.ArticleResponse
+import no.ordbokene.model.json.ArticleResponse
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ArticleResponseTest {
 
@@ -14,10 +15,13 @@ class ArticleResponseTest {
   }
 
   @Test
-  fun shouldParseArticleJson() {
+  fun shouldParseArticle() {
     val article = sampleData.first()
     val parsed = format.decodeFromString<ArticleResponse>(article)
-    println(parsed)
+    assertEquals(54131, parsed.articleId)
+    assertEquals("skår", parsed.lemmas.first().lemma)
+    assertEquals("score", parsed.lemmas.last().lemma)
+    assertEquals(3, parsed.body.definitions.first().id)
   }
 }
 
