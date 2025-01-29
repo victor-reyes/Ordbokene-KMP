@@ -49,6 +49,4 @@ android {
   }
 }
 
-dependencies {
-  debugImplementation(compose.uiTooling)
-}
+dependencies { debugImplementation(compose.uiTooling) }
