@@ -1,5 +1,5 @@
 import kotlinx.serialization.json.Json
-import no.ordbokene.model.json.ArticleResponse
+import no.ordbokene.model.json.lookup.ArticleResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
