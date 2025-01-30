@@ -7,17 +7,32 @@
 //
 
 import Combine
+import Shared
 
 class SearchViewModel: ObservableObject {
 
     @Published var query: String = ""
     @Published var articles: [String] = []
 
+    let repository = ArticleRepositoryImpl(service: DictionaryApiService())
+
     init() {
-        $query.map { query in
-            ["Article 1", "Article 2", "Article 3", "Article 4"].map {
-                "\($0) - \(query)"
+        $query.flatMap { query in
+            Future { promise in
+                Task {
+                    let suggestions = try! await self.repository
+                        .fetchAutocomplete(query: query)
+                        .suggestions
+                    let result = suggestions.exact.union(suggestions.inflection)
+                        .union(
+                            suggestions.similar
+                        ).union(suggestions.freeText).map {
+                            $0.word
+                        }
+                    promise(.success(result))
+                }
             }
+
         }
         .assign(to: &$articles)
     }
