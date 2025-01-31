@@ -3,20 +3,25 @@ package no.ordbokene.ui.search
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,20 +39,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import no.ordbokene.model.json.lookup.ArticleResponse
 
 @Composable
 fun SearchScreen(viewModel: SearchViewModel = viewModel()) {
 
   val query by viewModel.query.collectAsState()
   val suggestions by viewModel.suggestions.collectAsState()
-  val articles by viewModel.articles.collectAsState()
-  SearchScreen(articles, query, viewModel::setWord, suggestions, viewModel::setWord)
+  val articleUiState by viewModel.articleUiState.collectAsState()
+  SearchScreen(articleUiState, query, viewModel::setQuery, suggestions, viewModel::setWord)
 }
 
 @Composable
 private fun SearchScreen(
-  articles: List<ArticleResponse>,
+  articleUiState: ArticleUiState,
   query: String,
   onQueryChanged: (String) -> Unit,
   suggestions: List<String>,
@@ -55,7 +59,17 @@ private fun SearchScreen(
 ) {
   Column(Modifier.fillMaxWidth().padding(16.dp), Arrangement.spacedBy(8.dp), Alignment.CenterHorizontally) {
     AutocompleteSearchField(query, onQueryChanged, suggestions, onSearch)
-    LazyColumn { items(articles) { Text(it.lemmas.first().lemma) } }
+    Articles(articleUiState)
+  }
+}
+
+@Composable
+fun Articles(articleUiState: ArticleUiState) {
+  when (articleUiState) {
+    is ArticleUiState.Loading -> Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
+
+    is ArticleUiState.Error -> Text("Error: ${articleUiState.message}")
+    is ArticleUiState.Success -> LazyColumn { items(articleUiState.articles) { Text(it.lemmas.first().lemma) } }
   }
 }
 
@@ -71,30 +85,32 @@ private fun AutocompleteSearchField(
   val focusRequester = remember { FocusRequester() }
   var showSuggestions by remember { mutableStateOf(false) }
 
-  OutlinedTextField(
-    query,
-    onQueryChanged,
-    Modifier.focusRequester(focusRequester).onFocusChanged { showSuggestions = it.isFocused },
-  )
-  AnimatedVisibility(showSuggestions) {
-    ElevatedCard {
-      LazyColumn(Modifier.fillMaxWidth().padding(16.dp)) {
-        itemsIndexed(suggestions) { index, suggestion ->
-          Row(
-            Modifier.clickable {
-              onSearch(suggestion)
-              focusManager.clearFocus()
+  val modifier = if (showSuggestions) Modifier.fillMaxHeight() else Modifier
+  Column(modifier) {
+    OutlinedTextField(
+      query,
+      onQueryChanged,
+      Modifier.focusRequester(focusRequester).onFocusChanged { showSuggestions = it.isFocused },
+    )
+    AnimatedVisibility(showSuggestions) {
+      ElevatedCard {
+        LazyColumn {
+          itemsIndexed(suggestions) { index, suggestion ->
+            Row(
+              Modifier.fillParentMaxWidth().clickable {
+                onSearch(suggestion)
+                focusManager.clearFocus()
+              }
+            ) {
+              Text(
+                suggestion,
+                Modifier.padding(12.dp),
+                fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                fontWeight = FontWeight.Bold,
+              )
             }
-          ) {
-            Text(
-              suggestion,
-              Modifier.padding(vertical = 12.dp),
-              fontSize = MaterialTheme.typography.button.fontSize,
-              fontWeight = FontWeight.Bold,
-            )
-            Spacer(Modifier.weight(1f))
+            if (index < suggestions.lastIndex) HorizontalDivider(Modifier.width(IntrinsicSize.Max))
           }
-          if (index < suggestions.lastIndex) HorizontalDivider()
         }
       }
     }
@@ -106,5 +122,5 @@ private fun AutocompleteSearchField(
 fun AppAndroidPreview() {
   var query by remember { mutableStateOf("") }
   val suggestions = listOf("Article 1", "Article 2").map { "$it by $query" }
-  MaterialTheme { SearchScreen(emptyList(), query, { query = it }, suggestions, {}) }
+  MaterialTheme { SearchScreen(ArticleUiState.Loading, query, { query = it }, suggestions, {}) }
 }

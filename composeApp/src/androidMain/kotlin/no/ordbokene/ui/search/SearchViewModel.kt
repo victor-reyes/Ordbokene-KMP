@@ -29,17 +29,18 @@ class SearchViewModel(private val savedStateHandle: SavedStateHandle) : ViewMode
       .map { with(it.suggestions) { exact + similar + inflection + freeText }.map { it.word } }
       .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-  val articles =
+  val articleUiState =
     word
       .combine(dictionary, ::Pair)
-      .flatMapLatest { (dictionary, query) ->
+      .flatMapLatest { (word, dictionary) ->
         flow {
-          emit(emptyList<ArticleResponse>())
-          val ids = repository.search(query).articlesIds.bm
-          emit(repository.fetchArticles(ids, dictionary))
+          emit(ArticleUiState.Loading)
+          val ids = repository.search(word).articlesIds.bm
+          val articles = repository.fetchArticles(ids, dictionary)
+          emit(ArticleUiState.Success(articles))
         }
       }
-      .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+      .stateIn(viewModelScope, SharingStarted.Eagerly, ArticleUiState.Loading)
 
   fun setQuery(query: String) {
     savedStateHandle["query"] = query
@@ -49,4 +50,12 @@ class SearchViewModel(private val savedStateHandle: SavedStateHandle) : ViewMode
     savedStateHandle["word"] = word
     setQuery(word)
   }
+}
+
+sealed class ArticleUiState {
+  object Loading : ArticleUiState()
+
+  data class Error(val message: String) : ArticleUiState()
+
+  data class Success(val articles: List<ArticleResponse>) : ArticleUiState()
 }
