@@ -2,14 +2,16 @@ package no.ordbokene.ui.search
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -40,6 +44,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
@@ -59,9 +64,17 @@ private fun SearchScreen(
   suggestions: List<String>,
   onSearch: (String) -> Unit,
 ) {
-  Column(Modifier.fillMaxWidth().padding(16.dp), Arrangement.spacedBy(8.dp), Alignment.CenterHorizontally) {
-    AutocompleteSearchField(query, onQueryChanged, suggestions, onSearch)
-    Articles(articleUiState)
+
+  val interactionSource = remember { MutableInteractionSource() }
+  val isFocused by interactionSource.collectIsFocusedAsState()
+  val modifier = if (isFocused) Modifier.blur(3.dp, BlurredEdgeTreatment.Unbounded) else Modifier
+
+  Box(Modifier.fillMaxWidth().padding(16.dp)) {
+    AutocompleteSearchField(query, suggestions, interactionSource, onQueryChanged, onSearch)
+    Column(modifier.zIndex(-1f)) {
+      Spacer(Modifier.height(64.dp))
+      Articles(articleUiState)
+    }
   }
 }
 
@@ -78,8 +91,9 @@ fun Articles(articleUiState: ArticleUiState) {
 @Composable
 private fun AutocompleteSearchField(
   query: String,
-  onQueryChanged: (String) -> Unit,
   suggestions: List<String>,
+  interactionSource: MutableInteractionSource,
+  onQueryChanged: (String) -> Unit,
   onSearch: (String) -> Unit,
 ) {
   val focusManager = LocalFocusManager.current
@@ -89,14 +103,14 @@ private fun AutocompleteSearchField(
   var textFieldWidthPx by remember { mutableStateOf(0.dp) }
   val density = LocalDensity.current
 
-  val modifier = if (showSuggestions) Modifier.fillMaxHeight() else Modifier
-  Column(modifier) {
+  Column {
     OutlinedTextField(
       query,
       onQueryChanged,
       Modifier.focusRequester(focusRequester)
         .onFocusChanged { showSuggestions = it.isFocused }
         .onGloballyPositioned { coordinates -> textFieldWidthPx = with(density) { coordinates.size.width.toDp() } },
+      interactionSource = interactionSource,
     )
     AnimatedVisibility(showSuggestions) {
       ElevatedCard(Modifier.width(textFieldWidthPx)) {
