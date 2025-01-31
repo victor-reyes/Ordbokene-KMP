@@ -39,14 +39,14 @@ class DictionaryApiService {
         .also { initLogger() }
   }
 
-  suspend fun fetchAutocomplete(query: String) =
+  suspend fun fetchAutocomplete(query: String, dict: String = "bm,nn", scope: String = "eifs") =
     client
       .get("suggest") {
         url {
           parameters.apply {
             append("q", query)
-            append("dict", "bm,nn")
-            append("include", "eifs")
+            append("dict", dict)
+            append("include", scope)
             append("dform", "int")
           }
         }
