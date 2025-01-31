@@ -15,6 +15,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import no.ordbokene.initLogger
 import no.ordbokene.model.json.autocomplete.AutocompleteResponse
+import no.ordbokene.model.json.lookup.ArticleResponse
+import no.ordbokene.model.json.search.SearchResponse
 
 class DictionaryApiService {
 
