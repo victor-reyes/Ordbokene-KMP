@@ -11,20 +11,17 @@ import no.ordbokene.model.json.search.SearchResponse
 interface ArticleRepository {
   @NativeCoroutines suspend fun fetchAutocomplete(query: String): AutocompleteResponse
 
-  @NativeCoroutines suspend fun search(query: String): List<SearchResponse>
+  @NativeCoroutines suspend fun search(query: String): SearchResponse
 
-  @NativeCoroutines suspend fun fetchArticle(id: Int): ArticleResponse
+  @NativeCoroutines suspend fun fetchArticle(id: Int, dictionary: String): ArticleResponse
 }
 
 class ArticleRepositoryImpl(val service: DictionaryApiService) : ArticleRepository {
   override suspend fun fetchAutocomplete(query: String) =
     withContext(Dispatchers.IO) { service.fetchAutocomplete(query) }
 
-  override suspend fun search(query: String): List<SearchResponse> {
-    TODO("Not yet implemented")
-  }
+  override suspend fun search(query: String) = with(Dispatchers.IO) { service.search(query) }
 
-  override suspend fun fetchArticle(id: Int): ArticleResponse {
-    TODO("Not yet implemented")
-  }
+  override suspend fun fetchArticle(id: Int, dictionary: String) =
+    withContext(Dispatchers.IO) { service.fetchArticle(id, dictionary) }
 }
