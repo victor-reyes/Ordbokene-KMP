@@ -31,7 +31,7 @@ class SearchViewModel: ObservableObject {
     init() {
         $query.flatMap { createFuture(for: self.repository.fetchAutocomplete(query: $0)) }
             .map { $0.suggestions }
-            .map { $0.exact.union($0.inflection).union($0.inflection).union($0.freeText).map { $0.word } }
+            .map { $0.exact.union($0.inflection).union($0.freeText).union($0.similar).map { $0.word } }
             .catch { _ in Just([]) }
             .receive(on: DispatchQueue.main)
             .assign(to: &$articles)
