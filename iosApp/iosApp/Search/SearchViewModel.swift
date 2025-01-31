@@ -24,7 +24,9 @@ extension ArticleRepository {
 class SearchViewModel: ObservableObject {
 
     @Published var query: String = ""
-    @Published var articles: [String] = []
+    @Published var word: String = ""
+    @Published var suggestions: [String] = []
+    @Published var articleUiState: ArticleUiState = .loading
 
     let repository: ArticleRepository = ArticleRepositoryImpl(service: DictionaryApiService())
 
@@ -34,6 +36,29 @@ class SearchViewModel: ObservableObject {
             .map { $0.exact.union($0.inflection).union($0.freeText).union($0.similar).map { $0.word } }
             .catch { _ in Just([]) }
             .receive(on: DispatchQueue.main)
-            .assign(to: &$articles)
+            .assign(to: &$suggestions)
+
+        $word
+            .flatMap { word in
+                Just(.loading).merge(
+                    with: createFuture(for: self.repository.fetchArticles(word: word, dictionary: "bm"))
+                        .map { ArticleUiState.success(articles: $0) }
+                        .catch { error in Just(ArticleUiState.error(message: error.localizedDescription)) })
+            }
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$articleUiState)
     }
+}
+
+extension SearchViewModel {
+    func search(word: String) {
+        self.query = word
+        self.word = word
+    }
+}
+
+enum ArticleUiState {
+    case loading
+    case error(message: String)
+    case success(articles: [ArticleResponse])
 }
