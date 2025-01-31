@@ -52,4 +52,19 @@ class DictionaryApiService {
         }
       }
       .body<AutocompleteResponse>()
+
+  suspend fun search(word: String, dict: String = "bm,nn", scope: String = "eifs") =
+    client
+      .get("articles") {
+        url {
+          parameters.apply {
+            append("w", word)
+            append("dict", dict)
+            append("include", scope)
+          }
+        }
+      }
+      .body<SearchResponse>()
+
+  suspend fun fetchArticle(id: Int, dict: String) = client.get("$dict/article/$id.json").body<ArticleResponse>()
 }
