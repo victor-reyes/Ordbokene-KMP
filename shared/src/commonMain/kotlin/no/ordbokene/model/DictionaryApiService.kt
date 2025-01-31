@@ -22,7 +22,10 @@ class DictionaryApiService {
     val client =
       HttpClient {
           install(ContentNegotiation) { json(Json) }
-          install(DefaultRequest) { url("https://ord.uib.no/api/") }
+          install(DefaultRequest) {
+            url("https://ord.uib.no/api/")
+            contentType(ContentType.Application.Json)
+          }
           install(Logging) {
             level = LogLevel.HEADERS
             logger =
@@ -39,7 +42,6 @@ class DictionaryApiService {
   suspend fun fetchAutocomplete(query: String) =
     client
       .get("suggest") {
-        contentType(ContentType.Application.Json)
         url {
           parameters.apply {
             append("q", query)
