@@ -1,15 +1,16 @@
 package no.ordbokene.model
 
+import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import no.ordbokene.model.json.autocomplete.AutocompleteResponse
 import no.ordbokene.model.json.lookup.ArticleResponse
 import no.ordbokene.model.json.search.SearchResponse
 
 interface ArticleRepository {
-  suspend fun fetchAutocomplete(query: String): AutocompleteResponse
+  @NativeCoroutines suspend fun fetchAutocomplete(query: String): AutocompleteResponse
 
-  suspend fun search(query: String): List<SearchResponse>
+  @NativeCoroutines suspend fun search(query: String): List<SearchResponse>
 
-  suspend fun fetchArticle(id: Int): ArticleResponse
+  @NativeCoroutines suspend fun fetchArticle(id: Int): ArticleResponse
 }
 
 class ArticleRepositoryImpl(val service: DictionaryApiService) : ArticleRepository {

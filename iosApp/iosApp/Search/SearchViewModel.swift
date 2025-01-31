@@ -7,33 +7,29 @@
 //
 
 import Combine
+import KMPNativeCoroutinesCombine
+import KMPNativeCoroutinesCore
 import Shared
+
+extension ArticleRepository {
+    func fetchAutocomplete(query: String) -> NativeSuspend<AutocompleteResponse, Error, KotlinUnit> {
+        ArticleRepositoryNativeKt.fetchAutocomplete(self, query: query)
+    }
+}
 
 class SearchViewModel: ObservableObject {
 
     @Published var query: String = ""
     @Published var articles: [String] = []
 
-    let repository = ArticleRepositoryImpl(service: DictionaryApiService())
+    let repository: ArticleRepository = ArticleRepositoryImpl(service: DictionaryApiService())
 
     init() {
-        $query.flatMap { query in
-            Future { promise in
-                Task {
-                    let suggestions = try! await self.repository
-                        .fetchAutocomplete(query: query)
-                        .suggestions
-                    let result = suggestions.exact.union(suggestions.inflection)
-                        .union(
-                            suggestions.similar
-                        ).union(suggestions.freeText).map {
-                            $0.word
-                        }
-                    promise(.success(result))
-                }
-            }
-
-        }
-        .assign(to: &$articles)
+        $query.flatMap { createFuture(for: self.repository.fetchAutocomplete(query: $0)) }
+            .map { $0.suggestions }
+            .map { $0.exact.union($0.inflection).union($0.inflection).union($0.freeText).map { $0.word } }
+            .catch { _ in Just([]) }
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$articles)
     }
 }
