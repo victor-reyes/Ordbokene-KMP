@@ -15,6 +15,10 @@ extension ArticleRepository {
     func fetchAutocomplete(query: String) -> NativeSuspend<AutocompleteResponse, Error, KotlinUnit> {
         ArticleRepositoryNativeKt.fetchAutocomplete(self, query: query)
     }
+
+    func fetchArticles(word: String, dictionary: String) -> NativeSuspend<[ArticleResponse], Error, KotlinUnit> {
+        ArticleRepositoryNativeKt.fetchArticles(self, word: word, dictionary: dictionary)
+    }
 }
 
 class SearchViewModel: ObservableObject {
