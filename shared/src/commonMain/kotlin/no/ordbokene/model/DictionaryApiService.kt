@@ -25,7 +25,7 @@ class DictionaryApiService {
       HttpClient {
           install(ContentNegotiation) { json(Json) }
           install(DefaultRequest) {
-            url("https://ord.uib.no/api/")
+            url("https://ord.uib.no/")
             contentType(ContentType.Application.Json)
           }
           install(Logging) {
@@ -41,14 +41,14 @@ class DictionaryApiService {
         .also { initLogger() }
   }
 
-  suspend fun fetchAutocomplete(query: String, dict: String = "bm,nn", scope: String = "eifs") =
+  suspend fun fetchAutocomplete(query: String, dict: String = "bm", scope: String = "eifs") =
     client
-      .get("suggest") {
+      .get("api/suggest") {
         url {
           parameters.apply {
             append("q", query)
             append("dict", dict)
-            append("include", scope)
+            append("scope", scope)
             append("dform", "int")
           }
         }
@@ -57,12 +57,12 @@ class DictionaryApiService {
 
   suspend fun search(word: String, dict: String = "bm,nn", scope: String = "eifs") =
     client
-      .get("articles") {
+      .get("api/articles") {
         url {
           parameters.apply {
             append("w", word)
             append("dict", dict)
-            append("include", scope)
+            append("scope", scope)
             append("n", 50.toString())
           }
         }
