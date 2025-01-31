@@ -35,8 +35,7 @@ class SearchViewModel(private val savedStateHandle: SavedStateHandle) : ViewMode
       .flatMapLatest { (word, dictionary) ->
         flow {
           emit(ArticleUiState.Loading)
-          val ids = repository.search(word).articlesIds.bm
-          val articles = repository.fetchArticles(ids, dictionary)
+          val articles = repository.fetchArticles(word, dictionary)
           emit(ArticleUiState.Success(articles))
         }
       }
