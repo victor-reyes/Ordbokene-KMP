@@ -55,7 +55,7 @@ class DictionaryApiService {
       }
       .body<AutocompleteResponse>()
 
-  suspend fun search(word: String, dict: String = "bm,nn", scope: String = "eifs") =
+  suspend fun search(word: String, dict: String = "bm,nn", scope: String = "eif") =
     client
       .get("api/articles") {
         url {
