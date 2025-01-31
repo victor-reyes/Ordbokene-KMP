@@ -5,6 +5,8 @@ plugins {
   alias(libs.plugins.kotlinMultiplatform)
   alias(libs.plugins.androidLibrary)
   alias(libs.plugins.kotlinSerialization)
+  alias(libs.plugins.ksp)
+  alias(libs.plugins.nativeCoroutines)
 }
 
 kotlin {
@@ -30,6 +32,8 @@ kotlin {
     commonTest.dependencies { implementation(libs.kotlin.test) }
     androidMain.dependencies { implementation(libs.ktor.client.okhttp) }
     iosMain.dependencies { implementation(libs.ktor.client.darwin) }
+
+    all { languageSettings.optIn("kotlin.experimental.ExperimentalObjCName") }
   }
 }
 
