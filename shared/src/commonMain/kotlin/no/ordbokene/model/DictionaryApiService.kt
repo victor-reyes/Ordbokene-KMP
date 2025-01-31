@@ -63,6 +63,7 @@ class DictionaryApiService {
             append("w", word)
             append("dict", dict)
             append("include", scope)
+            append("n", 50.toString())
           }
         }
       }
