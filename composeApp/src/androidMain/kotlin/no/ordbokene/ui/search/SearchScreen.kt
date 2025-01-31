@@ -34,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,7 +69,6 @@ private fun SearchScreen(
 fun Articles(articleUiState: ArticleUiState) {
   when (articleUiState) {
     is ArticleUiState.Loading -> Box(Modifier.fillMaxSize(), Alignment.Center) { CircularProgressIndicator() }
-
     is ArticleUiState.Error -> Text("Error: ${articleUiState.message}")
     is ArticleUiState.Success -> LazyColumn { items(articleUiState.articles) { Text(it.lemmas.first().lemma) } }
   }
@@ -85,15 +86,20 @@ private fun AutocompleteSearchField(
   val focusRequester = remember { FocusRequester() }
   var showSuggestions by remember { mutableStateOf(false) }
 
+  var textFieldWidthPx by remember { mutableStateOf(0.dp) }
+  val density = LocalDensity.current
+
   val modifier = if (showSuggestions) Modifier.fillMaxHeight() else Modifier
   Column(modifier) {
     OutlinedTextField(
       query,
       onQueryChanged,
-      Modifier.focusRequester(focusRequester).onFocusChanged { showSuggestions = it.isFocused },
+      Modifier.focusRequester(focusRequester)
+        .onFocusChanged { showSuggestions = it.isFocused }
+        .onGloballyPositioned { coordinates -> textFieldWidthPx = with(density) { coordinates.size.width.toDp() } },
     )
     AnimatedVisibility(showSuggestions) {
-      ElevatedCard {
+      ElevatedCard(Modifier.width(textFieldWidthPx)) {
         LazyColumn {
           itemsIndexed(suggestions) { index, suggestion ->
             Row(
