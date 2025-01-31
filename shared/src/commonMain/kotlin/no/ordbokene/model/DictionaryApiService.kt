@@ -8,7 +8,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.request.request
+import io.ktor.client.request.get
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import no.ordbokene.initLogger
@@ -36,7 +36,7 @@ class DictionaryApiService {
 
   suspend fun fetchAutocomplete(query: String) =
     client
-      .request("suggest") {
+      .get("suggest") {
         url {
           parameters.apply {
             append("q", query)
