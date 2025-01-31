@@ -3,6 +3,8 @@ package no.ordbokene.model
 import com.rickclephas.kmp.nativecoroutines.NativeCoroutines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import no.ordbokene.model.json.autocomplete.AutocompleteResponse
 import no.ordbokene.model.json.lookup.ArticleResponse
@@ -14,6 +16,8 @@ interface ArticleRepository {
   @NativeCoroutines suspend fun search(query: String): SearchResponse
 
   @NativeCoroutines suspend fun fetchArticle(id: Int, dictionary: String): ArticleResponse
+
+  @NativeCoroutines suspend fun fetchArticles(ids: Set<Int>, dictionary: String): List<ArticleResponse>
 }
 
 class ArticleRepositoryImpl(val service: DictionaryApiService) : ArticleRepository {
@@ -24,4 +28,7 @@ class ArticleRepositoryImpl(val service: DictionaryApiService) : ArticleReposito
 
   override suspend fun fetchArticle(id: Int, dictionary: String) =
     withContext(Dispatchers.IO) { service.fetchArticle(id, dictionary) }
+
+  override suspend fun fetchArticles(ids: Set<Int>, dictionary: String) =
+    withContext(Dispatchers.IO) { ids.map { id -> async { service.fetchArticle(id, dictionary) } }.awaitAll() }
 }
