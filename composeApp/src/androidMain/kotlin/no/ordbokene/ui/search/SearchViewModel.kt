@@ -26,7 +26,7 @@ class SearchViewModel(private val savedStateHandle: SavedStateHandle) : ViewMode
   val suggestions =
     query
       .map(repository::fetchAutocomplete)
-      .map { with(it.suggestions) { exact + similar + inflection + freeText }.map { it.word } }
+      .map { with(it.suggestions) { exact + similar + inflection + freeText }.map { it.word }.distinct() }
       .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
   val articleUiState =
