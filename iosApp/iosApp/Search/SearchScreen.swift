@@ -27,15 +27,17 @@ private struct Articles: View {
     let articleUiState: ArticleUiState
 
     var body: some View {
-        switch articleUiState {
-        case .loading:
-            ProgressView()
-        case .error(let message):
-            Text("Error: \(message)")
-        case .success(let articles):
-            LazyVStack {
-                ForEach(articles, id: \.self) { article in
-                    Text(article.lemmas.first!.lemma)
+        ScrollView {
+            switch articleUiState {
+            case .loading:
+                ProgressView()
+            case .error(let message):
+                Text("Error: \(message)")
+            case .success(let articles):
+                LazyVStack {
+                    ForEach(articles, id: \.self) { article in
+                        Text(article.lemmas.first!.lemma)
+                    }
                 }
             }
         }
