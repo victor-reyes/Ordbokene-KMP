@@ -32,8 +32,7 @@ class SearchViewModel: ObservableObject {
 
     init() {
         $query.flatMap { createFuture(for: self.repository.fetchAutocomplete(query: $0)) }
-            .map { $0.suggestions }
-            .map { $0.exact.union($0.inflection).union($0.freeText).union($0.similar).map { $0.word } }
+            .map(\.uniqueSuggestionArray)
             .catch { _ in Just([]) }
             .receive(on: DispatchQueue.main)
             .assign(to: &$suggestions)
@@ -54,6 +53,14 @@ extension SearchViewModel {
     func search(word: String) {
         self.query = word
         self.word = word
+    }
+}
+
+
+extension AutocompleteResponse {
+    var uniqueSuggestionArray: [String] {
+        let suggestions = self.suggestions
+        return (suggestions.exact + suggestions.inflection + suggestions.freeText + suggestions.similar).map(\.word).distinct()
     }
 }
 
