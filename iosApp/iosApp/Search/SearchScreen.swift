@@ -53,6 +53,9 @@ private struct SearchField: View {
     var body: some View {
         VStack {
             TextField("Search", text: $query)
+                .submitLabel(.search)
+                .autocorrectionDisabled(true)
+                .textInputAutocapitalization(.never)
                 .onSubmit {
                     withAnimation {
                         isFocused = false
