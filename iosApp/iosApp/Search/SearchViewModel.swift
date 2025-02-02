@@ -57,6 +57,13 @@ extension SearchViewModel {
     }
 }
 
+extension Array where Element: Hashable {
+    func distinct() -> [Element] {
+        var seen: Set<Element> = []
+        return self.filter { seen.insert($0).inserted }
+    }
+}
+
 enum ArticleUiState {
     case loading
     case error(message: String)
