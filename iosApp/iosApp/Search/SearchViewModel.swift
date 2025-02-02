@@ -31,11 +31,11 @@ class SearchViewModel: ObservableObject {
     let repository: ArticleRepository = ArticleRepositoryImpl(service: DictionaryApiService())
 
     init() {
-        $query.flatMap { createFuture(for: self.repository.fetchAutocomplete(query: $0)) }
-            .map(\.uniqueSuggestionArray)
-            .catch { _ in Just([]) }
-            .receive(on: DispatchQueue.main)
-            .assign(to: &$suggestions)
+        $query.flatMap {
+            createFuture(for: self.repository.fetchAutocomplete(query: $0)).map(\.uniqueSuggestionArray).replaceError(with: [])
+        }
+        .receive(on: DispatchQueue.main)
+        .assign(to: &$suggestions)
 
         $word
             .flatMap { word in
