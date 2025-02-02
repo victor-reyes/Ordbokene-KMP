@@ -32,7 +32,11 @@ class SearchViewModel: ObservableObject {
 
     init() {
         $query.flatMap {
-            createFuture(for: self.repository.fetchAutocomplete(query: $0)).map(\.uniqueSuggestionArray).replaceError(with: [])
+            Just([]).merge(
+                with:
+                    createFuture(for: self.repository.fetchAutocomplete(query: $0))
+                    .map(\.uniqueSuggestionArray)
+                    .replaceError(with: []))
         }
         .receive(on: DispatchQueue.main)
         .assign(to: &$suggestions)
@@ -55,7 +59,6 @@ extension SearchViewModel {
         self.word = word
     }
 }
-
 
 extension AutocompleteResponse {
     var uniqueSuggestionArray: [String] {
