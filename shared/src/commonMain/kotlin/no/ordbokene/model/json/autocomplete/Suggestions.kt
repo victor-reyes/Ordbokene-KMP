@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Suggestions(
-  val exact: Set<Suggestion> = emptySet(),
-  @SerialName("inflect") val inflection: Set<Suggestion> = emptySet(),
-  val similar: Set<Suggestion> = emptySet(),
-  @SerialName("freetext") val freeText: Set<Suggestion> = emptySet(),
+  val exact: List<Suggestion> = emptyList(),
+  @SerialName("inflect") val inflection: List<Suggestion> = emptyList(),
+  val similar: List<Suggestion> = emptyList(),
+  @SerialName("freetext") val freeText: List<Suggestion> = emptyList(),
 )
