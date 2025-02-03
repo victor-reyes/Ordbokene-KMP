@@ -12,11 +12,14 @@ struct SearchScreen: View {
     @EnvironmentObject private var model: SearchViewModel
 
     var body: some View {
-        VStack(spacing: 20) {
+        ScrollView {
+            Spacer(minLength: 64)
+            Articles(articleUiState: model.articleUiState).frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .overlay(alignment: .top) {
             SearchField(query: $model.query, suggestions: model.suggestions) {
                 model.search(word: $0)
             }
-            Articles(articleUiState: model.articleUiState)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
@@ -27,17 +30,15 @@ private struct Articles: View {
     let articleUiState: ArticleUiState
 
     var body: some View {
-        ScrollView {
-            switch articleUiState {
-            case .loading:
-                ProgressView()
-            case .error(let message):
-                Text("Error: \(message)")
-            case .success(let articles):
-                LazyVStack {
-                    ForEach(articles, id: \.self) { article in
-                        Text(article.lemmas.first!.lemma)
-                    }
+        switch articleUiState {
+        case .loading:
+            ProgressView()
+        case .error(let message):
+            Text("Error: \(message)")
+        case .success(let articles):
+            LazyVStack {
+                ForEach(articles, id: \.self) { article in
+                    Text(article.lemmas.first!.lemma)
                 }
             }
         }
