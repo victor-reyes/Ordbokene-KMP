@@ -55,7 +55,7 @@ private struct SearchField: View {
 
     var body: some View {
         VStack {
-            TextField("Search", text: $query)
+            TextField("Tap to search", text: $query)
                 .submitLabel(.search)
                 .autocorrectionDisabled(true)
                 .textInputAutocapitalization(.never)
@@ -67,7 +67,6 @@ private struct SearchField: View {
                 }
                 .focused($isFocused, equals: true)
                 .padding()
-                .overlay(RoundedRectangle(cornerRadius: 20).stroke(.blue))
 
             if isFocused {
                 ScrollView {
@@ -80,6 +79,14 @@ private struct SearchField: View {
                 }
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .background(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(.gray, lineWidth: 1)
+                .fill(.background)
+                .shadow(color: .gray, radius: 2, x: 2, y: 2)
+        )
+        .frame(maxHeight: 400, alignment: .top)
     }
 }
 
@@ -104,11 +111,6 @@ private struct Suggestions: View {
                 }
             }
         }
-        .background(Rectangle().fill(Color.white))
-        .cornerRadius(10)
-        .shadow(color: .gray, radius: 3, x: 2, y: 2)
-        .padding(.horizontal)
-
     }
 }
 
