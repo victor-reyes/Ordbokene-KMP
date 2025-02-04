@@ -29,6 +29,6 @@ struct SearchScreen: View {
 }
 
 #Preview {
-    let viewModel = SearchViewModel()
+    let viewModel = iOSApp.initSearchViewModel()
     SearchScreen().environmentObject(viewModel)
 }

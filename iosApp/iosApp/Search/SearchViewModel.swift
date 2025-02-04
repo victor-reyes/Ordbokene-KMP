@@ -28,9 +28,10 @@ class SearchViewModel: ObservableObject {
     @Published var suggestions: [String] = []
     @Published var articleUiState: ArticleUiState = .loading
 
-    let repository: ArticleRepository = ArticleRepositoryImpl(service: DictionaryApiService())
+    let repository: ArticleRepository
 
-    init() {
+    init(repository: ArticleRepository) {
+        self.repository = repository
         $query.flatMap {
             Just([]).merge(
                 with:
