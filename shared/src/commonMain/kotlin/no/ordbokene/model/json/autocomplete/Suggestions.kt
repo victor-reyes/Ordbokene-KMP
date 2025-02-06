@@ -9,4 +9,5 @@ data class Suggestions(
   @SerialName("inflect") val inflection: List<Suggestion> = emptyList(),
   val similar: List<Suggestion> = emptyList(),
   @SerialName("freetext") val freeText: List<Suggestion> = emptyList(),
+  val translate: List<Suggestion> = emptyList(),
 )
