@@ -10,14 +10,12 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import no.ordbokene.model.ArticleRepositoryImpl
-import no.ordbokene.model.DictionaryApiService
+import no.ordbokene.model.ArticleRepository
 import no.ordbokene.model.json.lookup.ArticleResponse
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class SearchViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
-
-  val repository = ArticleRepositoryImpl(DictionaryApiService())
+class SearchViewModel(private val savedStateHandle: SavedStateHandle, private val repository: ArticleRepository) :
+  ViewModel() {
 
   val query = savedStateHandle.getStateFlow("query", "")
   private val word = savedStateHandle.getStateFlow("word", "")
