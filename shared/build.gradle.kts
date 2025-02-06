@@ -28,6 +28,9 @@ kotlin {
       implementation(libs.ktor.serialization.kotlinx.json)
       implementation(libs.ktor.client.logging)
       implementation(libs.napier)
+
+      implementation(project.dependencies.platform(libs.koin.bom))
+      implementation(libs.koin.core)
     }
     commonTest.dependencies { implementation(libs.kotlin.test) }
     androidMain.dependencies { implementation(libs.ktor.client.okhttp) }

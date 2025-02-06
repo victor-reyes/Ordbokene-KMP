@@ -28,6 +28,9 @@ kotlin {
       implementation(libs.androidx.lifecycle.runtime.compose)
       implementation(libs.androidx.lifecycle.viewmodel.compose.android)
 
+      implementation(libs.koin.android)
+      implementation(libs.koin.androidx.compose)
+
       implementation(projects.shared)
     }
   }
