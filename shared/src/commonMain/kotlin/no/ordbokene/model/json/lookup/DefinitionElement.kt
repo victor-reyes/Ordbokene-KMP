@@ -37,7 +37,7 @@ data class ExampleElement(val quote: Quote, val explanation: Explanation? = null
 
 @Serializable
 @SerialName("sub_article")
-data class SubArticleElement(
+data class Idiom(
   @SerialName("article_id") val articleId: Int,
   val lemmas: List<String> = emptyList(),
   val intro: Intro,
