@@ -1,6 +1,8 @@
 package no.ordbokene.ui.search
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -28,6 +30,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -106,13 +109,16 @@ private fun AutocompleteSearchField(
   var textFieldWidthPx by remember { mutableStateOf(0.dp) }
   val density = LocalDensity.current
 
-  Column {
+  val modifier by remember { derivedStateOf { if (showSuggestions) Modifier.fillMaxWidth() else Modifier } }
+  Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
     OutlinedTextField(
       query,
       onQueryChanged,
-      Modifier.focusRequester(focusRequester)
+      modifier
+        .focusRequester(focusRequester)
         .onFocusChanged { showSuggestions = it.isFocused }
-        .onGloballyPositioned { coordinates -> textFieldWidthPx = with(density) { coordinates.size.width.toDp() } },
+        .onGloballyPositioned { coordinates -> textFieldWidthPx = with(density) { coordinates.size.width.toDp() } }
+        .animateContentSize(),
       interactionSource = interactionSource,
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
       keyboardActions =
