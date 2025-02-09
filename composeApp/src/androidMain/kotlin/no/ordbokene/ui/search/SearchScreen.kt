@@ -122,6 +122,7 @@ private fun AutocompleteSearchField(
             onSearch(query)
           }
         ),
+      singleLine = true,
     )
     AnimatedVisibility(showSuggestions) {
       ElevatedCard(Modifier.width(textFieldWidthPx)) {
