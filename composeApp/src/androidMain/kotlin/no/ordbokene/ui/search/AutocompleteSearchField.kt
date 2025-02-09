@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
@@ -102,4 +103,20 @@ fun AutocompleteSearchField(
       }
     }
   }
+}
+
+@Preview
+@Composable
+fun AutocompleteSearchFieldPreview() {
+  val suggestions = listOf("Suggestion 1", "Suggestion 2", "Suggestion 3")
+  val interactionSource = remember { MutableInteractionSource() }
+  var query by remember { mutableStateOf("hel") }
+
+  AutocompleteSearchField(
+    query = query,
+    suggestions = suggestions,
+    interactionSource = interactionSource,
+    onQueryChanged = { newQuery -> query = newQuery },
+    onSearch = { searchedQuery -> {} },
+  )
 }
