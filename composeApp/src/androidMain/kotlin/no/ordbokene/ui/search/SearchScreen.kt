@@ -131,7 +131,7 @@ private fun AutocompleteSearchField(
       singleLine = true,
     )
     AnimatedVisibility(showSuggestions) {
-      ElevatedCard(Modifier.width(textFieldWidthPx)) {
+      ElevatedCard(Modifier.width(textFieldWidthPx).heightIn(max = 256.dp)) {
         LazyColumn {
           itemsIndexed(suggestions) { index, suggestion ->
             Row(
