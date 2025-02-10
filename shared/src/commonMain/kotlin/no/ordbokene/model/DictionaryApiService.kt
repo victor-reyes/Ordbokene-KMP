@@ -15,6 +15,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import no.ordbokene.initLogger
 import no.ordbokene.model.json.autocomplete.AutocompleteResponse
+import no.ordbokene.model.json.concept.ConceptResponse
 import no.ordbokene.model.json.lookup.ArticleResponse
 import no.ordbokene.model.json.search.SearchResponse
 
@@ -70,4 +71,12 @@ class DictionaryApiService {
       .body<SearchResponse>()
 
   suspend fun fetchArticle(id: Int, dict: String) = client.get("$dict/article/$id.json").body<ArticleResponse>()
+
+  suspend fun fetchConcepts(dict: String) = client.get("$dict/concepts.json").body<ConceptResponse>().concepts
+
+  suspend fun fetchWordClassAbbreviations(dict: String) =
+    client.get("$dict/word_class.json").body<Map<String, String>>()
+
+  suspend fun fetchSubWordClassAbbreviations(dict: String) =
+    client.get("$dict/sub_word_class.json").body<Map<String, String>>()
 }
