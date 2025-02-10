@@ -16,13 +16,6 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonIgnoreUnknownKeys
 import kotlinx.serialization.json.JsonPrimitive
-import no.ordbokene.model.json.lookup.ids.DomainId
-import no.ordbokene.model.json.lookup.ids.EntityId
-import no.ordbokene.model.json.lookup.ids.GrammarId
-import no.ordbokene.model.json.lookup.ids.LanguageId
-import no.ordbokene.model.json.lookup.ids.RelationId
-import no.ordbokene.model.json.lookup.ids.RhetoricId
-import no.ordbokene.model.json.lookup.ids.TemporalId
 
 @JsonClassDiscriminator("type_") @Polymorphic @Serializable sealed interface TextItem
 
@@ -35,22 +28,22 @@ import no.ordbokene.model.json.lookup.ids.TemporalId
 @Polymorphic
 @Serializable
 sealed interface UniqueItem : TextItem {
-  val id: Enum<*>
+  val id: String
 }
 
-@Serializable @SerialName("grammar") data class GrammarItem(override val id: GrammarId) : UniqueItem
+@Serializable @SerialName("grammar") data class GrammarItem(override val id: String) : UniqueItem
 
-@Serializable @SerialName("domain") data class DomainItem(override val id: DomainId) : UniqueItem
+@Serializable @SerialName("domain") data class DomainItem(override val id: String) : UniqueItem
 
-@Serializable @SerialName("rhetoric") data class RhetoricItem(override val id: RhetoricId) : UniqueItem
+@Serializable @SerialName("rhetoric") data class RhetoricItem(override val id: String) : UniqueItem
 
-@Serializable @SerialName("entity") data class EntityItem(override val id: EntityId) : UniqueItem
+@Serializable @SerialName("entity") data class EntityItem(override val id: String) : UniqueItem
 
-@Serializable @SerialName("relation") data class RelationItem(override val id: RelationId) : UniqueItem
+@Serializable @SerialName("relation") data class RelationItem(override val id: String) : UniqueItem
 
-@Serializable @SerialName("language") data class LanguageItem(override val id: LanguageId) : UniqueItem
+@Serializable @SerialName("language") data class LanguageItem(override val id: String) : UniqueItem
 
-@Serializable @SerialName("temporal") data class TemporalItem(override val id: TemporalId) : UniqueItem
+@Serializable @SerialName("temporal") data class TemporalItem(override val id: String) : UniqueItem
 
 @Serializable
 @SerialName("quote_inset")
