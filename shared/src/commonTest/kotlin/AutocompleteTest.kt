@@ -20,7 +20,7 @@ class AutocompleteTest {
 
     assertEquals("tomte", parsed.query)
     assertEquals(
-      setOf(
+      listOf(
         Suggestion("tomte", Dictionary.BOTH),
         Suggestion("tomtefelt", Dictionary.NN),
         Suggestion("tomtekall", Dictionary.NN),
