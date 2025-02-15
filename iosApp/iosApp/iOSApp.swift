@@ -14,8 +14,9 @@ struct iOSApp: App {
 
 extension iOSApp {
     static func initSearchViewModel() -> SearchViewModel {
-        let service = DictionaryApiService()
-        let repository: ArticleRepository = ArticleRepositoryImpl(service: service)
+        let helper: KoinHelper = KoinHelper()
+        helper.doInitKoin()
+        let repository = helper.repository
         let viewModel = SearchViewModel(repository: repository)
         return viewModel
     }
