@@ -16,8 +16,12 @@ extension ArticleRepository {
         ArticleRepositoryNativeKt.fetchAutocomplete(self, query: query)
     }
 
-    func fetchArticles(word: String, dictionary: String) -> NativeSuspend<[ArticleResponse], Error, KotlinUnit> {
-        ArticleRepositoryNativeKt.fetchArticles(self, word: word, dictionary: dictionary)
+    func fetchAsFlow(ids: [KotlinInt], dictionary: String) -> NativeSuspend<NativeFlow<ArticleResponse, Error, KotlinUnit>, Error, KotlinUnit> {
+        return ArticleRepositoryNativeKt.fetchArticleFlow(self, ids: ids, dictionary: dictionary)
+    }
+
+    func fetchIds(word: String, dictionary: String) -> NativeSuspend<[KotlinInt], Error, KotlinUnit> {
+        return ArticleRepositoryNativeKt.fetchIds(self, word: word, dictionary: dictionary)
     }
 }
 
@@ -28,14 +32,12 @@ class SearchViewModel: ObservableObject {
     @Published var suggestions: [String] = []
     @Published var articleUiState: ArticleUiState = .loading
 
-    let repository: ArticleRepository
-
     init(repository: ArticleRepository) {
-        self.repository = repository
+
         $query.flatMap {
             Just([]).merge(
                 with:
-                    createFuture(for: self.repository.fetchAutocomplete(query: $0))
+                    createFuture(for: repository.fetchAutocomplete(query: $0))
                     .map(\.uniqueSuggestionArray)
                     .replaceError(with: []))
         }
@@ -43,12 +45,27 @@ class SearchViewModel: ObservableObject {
         .assign(to: &$suggestions)
 
         $word
-            .flatMap { word in
-                Just(.loading).merge(
-                    with: createFuture(for: self.repository.fetchArticles(word: word, dictionary: "bm"))
-                        .map { ArticleUiState.success(articles: $0) }
-                        .catch { error in Just(ArticleUiState.error(message: error.localizedDescription)) })
+            .map { word in
+                let loading = Just(ArticleUiState.loading).eraseToAnyPublisher()
+                let articles = createFuture(for: repository.fetchIds(word: word, dictionary: "bm"))
+                    .replaceError(with: [])
+                    .flatMap { ids -> AnyPublisher<ArticleUiState, Never> in
+                        if ids.isEmpty {
+                            return Just(ArticleUiState.success(articles: []))
+                                .eraseToAnyPublisher()
+                        } else {
+                            return createPublisher(for: repository.fetchAsFlow(ids: ids, dictionary: "bm"))
+                                .scan([]) { $0 + [$1] }
+                                .dropFirst()
+                                .map { articles in ArticleUiState.success(articles: articles) }
+                                .replaceError(with: ArticleUiState.error(message: ""))
+                                .eraseToAnyPublisher()
+                        }
+                    }
+                    .eraseToAnyPublisher()
+                return loading.merge(with: articles).eraseToAnyPublisher()
             }
+            .switchToLatest()
             .receive(on: DispatchQueue.main)
             .assign(to: &$articleUiState)
     }
