@@ -68,7 +68,7 @@ expect val engine: HttpClientEngineFactory<HttpClientEngineConfig>
 val httpClient =
   HttpClient(engine) {
       install(ContentNegotiation) { json(Json) }
-      install(HttpCache)
+      install(HttpCache) { publicStorage(SharedCacheStorage()) }
       install(DefaultRequest) {
         url("https://ord.uib.no/")
         contentType(ContentType.Application.Json)
