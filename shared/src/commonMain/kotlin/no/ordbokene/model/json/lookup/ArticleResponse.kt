@@ -30,6 +30,7 @@ data class ArticleLemma(
   @SerialName("inflection_class") val inflectionClass: String? = null,
   @SerialName("markdown_lemma") val markdownLemma: String? = null,
   @SerialName("annotated_lemma") val annotatedLemma: AnnotatedLemma? = null,
+  @SerialName("stress_vowel") val stressVowel: Int? = null,
   val junction: String? = null,
   @SerialName("neg_junction") val negJunction: String? = null,
   @SerialName("added_norm") val addedNorm: Boolean? = null,

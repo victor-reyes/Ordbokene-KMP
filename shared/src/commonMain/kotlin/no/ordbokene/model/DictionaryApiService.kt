@@ -3,7 +3,10 @@ package no.ordbokene.model
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.engine.HttpClientEngineConfig
+import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.plugins.DefaultRequest
+import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -19,28 +22,7 @@ import no.ordbokene.model.json.concept.ConceptResponse
 import no.ordbokene.model.json.lookup.ArticleResponse
 import no.ordbokene.model.json.search.SearchResponse
 
-class DictionaryApiService {
-
-  companion object {
-    val client =
-      HttpClient {
-          install(ContentNegotiation) { json(Json) }
-          install(DefaultRequest) {
-            url("https://ord.uib.no/")
-            contentType(ContentType.Application.Json)
-          }
-          install(Logging) {
-            level = LogLevel.HEADERS
-            logger =
-              object : Logger {
-                override fun log(message: String) {
-                  Napier.v(message, tag = "HTTP Client")
-                }
-              }
-          }
-        }
-        .also { initLogger() }
-  }
+class DictionaryApiService(val client: HttpClient) {
 
   suspend fun fetchAutocomplete(query: String, dict: String = "bm", scope: String = "eifs") =
     client
@@ -80,3 +62,25 @@ class DictionaryApiService {
   suspend fun fetchSubWordClassAbbreviations(dict: String) =
     client.get("$dict/sub_word_class.json").body<Map<String, String>>()
 }
+
+expect val engine: HttpClientEngineFactory<HttpClientEngineConfig>
+
+val httpClient =
+  HttpClient(engine) {
+      install(ContentNegotiation) { json(Json) }
+      install(HttpCache) { publicStorage(SharedCacheStorage()) }
+      install(DefaultRequest) {
+        url("https://ord.uib.no/")
+        contentType(ContentType.Application.Json)
+      }
+      install(Logging) {
+        level = LogLevel.HEADERS
+        logger =
+          object : Logger {
+            override fun log(message: String) {
+              Napier.v(message, tag = "HTTP Client")
+            }
+          }
+      }
+    }
+    .also { initLogger() }
